@@ -1,6 +1,24 @@
+const fs = require('fs');
 const readline = require('readline');
 
-let notes = [];
+const FILE = 'notes.json';
+
+// загрузка заметок
+function loadNotes() {
+    try {
+        const data = fs.readFileSync(FILE);
+        return JSON.parse(data);
+    } catch {
+        return [];
+    }
+}
+
+// сохранение
+function saveNotes(notes) {
+    fs.writeFileSync(FILE, JSON.stringify(notes, null, 2));
+}
+
+let notes = loadNotes();
 
 function greet() {
     console.log("Добро пожаловать в приложение заметок!");
@@ -8,6 +26,7 @@ function greet() {
 
 function addNote(text) {
     notes.push(text);
+    saveNotes(notes);
     console.log("Добавлено:", text);
 }
 
@@ -24,6 +43,7 @@ function deleteNote(index) {
     if (notes[index]) {
         console.log("Удалено:", notes[index]);
         notes.splice(index, 1);
+        saveNotes(notes);
     }
 }
 
