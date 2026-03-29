@@ -12,3 +12,7 @@
 ## Запуск
 npm install
 npm start
+
+## Если не работает, вот старая версия
+npm uninstall chalk
+npm install chalk@4
