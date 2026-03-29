@@ -2,6 +2,8 @@ const fs = require('fs');
 const readline = require('readline');
 const chalk = require('chalk');
 
+const { reindexNotes, getStats } = require('./utils/notesUtils');
+
 const FILE = 'notes.json';
 
 // загрузка
@@ -45,6 +47,7 @@ function addNote(text) {
     };
 
     notes.push(note);
+    notes = reindexNotes(notes);
     saveNotes(notes);
 
     console.log(chalk.blue("✔ Добавлено:"), text);
@@ -59,8 +62,8 @@ function showAllNotes() {
         return;
     }
 
-    notes.forEach((note, i) => {
-        console.log(chalk.cyan(`${i + 1}. ${note.text}`));
+    notes.forEach((note) => {
+        console.log(chalk.cyan(`${note.id}. ${note.text}`));
         console.log(chalk.gray(`   ${note.created}\n`));
     });
 }
@@ -87,6 +90,7 @@ function deleteNote(index) {
 
     console.log(chalk.red("Удалено:"), notes[index].text);
     notes.splice(index, 1);
+    notes = reindexNotes(notes);
     saveNotes(notes);
 }
 
@@ -103,9 +107,18 @@ function searchNotes(query) {
         return;
     }
 
-    results.forEach((note, i) => {
-        console.log(chalk.green(`${i + 1}. ${note.text}`));
+    results.forEach((note) => {
+        console.log(chalk.green(`${note.id}. ${note.text}`));
     });
+}
+
+// статистика
+function showStats() {
+    const stats = getStats(notes);
+
+    console.log(chalk.yellow("\n📊 Статистика:\n"));
+    console.log("Всего заметок:", stats.total);
+    console.log("Последняя создана:", stats.lastCreated);
 }
 
 // меню
@@ -117,7 +130,8 @@ function menu() {
 4. ❌ Удалить
 5. 🔍 Поиск
 6. 🧹 Очистить экран
-7. 🚪 Выход
+7. 📊 Статистика
+8. 🚪 Выход
 `));
 }
 
@@ -165,6 +179,10 @@ function runApp() {
 
             } else if (a === '6') {
                 clear();
+                ask();
+
+            } else if (a === '7') {
+                showStats();
                 ask();
 
             } else {
