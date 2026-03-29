@@ -10,3 +10,5 @@
 - Сохранение в файл
 
 ## Запуск
+npm install
+npm start
